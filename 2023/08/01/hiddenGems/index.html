@@ -17,7 +17,7 @@
 <!--<![endif]-->
 
 <head>
-  <title>海子 《日记》 | Shang的个人博客</title>
+  <title>文章阅读：《Hidden Gems: 4D Radar Scene Flow Learning Using Cross-Modal Supervision》(CVPR2023 highlight) | Shang的个人博客</title>
   <!-- Meta data -->
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -173,35 +173,51 @@
         <div class="row col-md-offset-2">
             <div class="col-md-8">
     			<span class="post-meta">
-      <time datetime="2023-03-15T08:39:03.000Z" itemprop="datePublished">
-          2023-03-15
+      <time datetime="2023-07-31T23:38:51.000Z" itemprop="datePublished">
+          2023-07-31
       </time>
     
     
     | 
-    <a href='/tags/poetry/'>poetry</a>
+    <a href='/tags/阅读笔记/'>阅读笔记</a>,
+    
+    <a href='/tags/CVPR/'>CVPR</a>,
+    
+    <a href='/tags/4D-Rader/'>4D Rader</a>
     
     
 </span>
-                <h1>海子 《日记》</h1>
+                <h1>文章阅读：《Hidden Gems: 4D Radar Scene Flow Learning Using Cross-Modal Supervision》(CVPR2023 highlight)</h1>
             </div>
         </div>
         <div class="col-md-8 col-md-offset-2">
-      		<p>姐姐，今夜我在德令哈，夜色笼罩<br>姐姐，我今夜只有戈壁<br>草原尽头我两手空空<br>悲痛时握不住一颗泪滴<br>姐姐，今夜我在德令哈<br>这是雨水中一座荒凉的城<br>除了那些路过的和居住的<br>德令哈……今夜<br>这是唯一的，最后的，抒情<br>这是唯一的，最后的，草原<br>我把石头还给石头<br>让胜利的胜利<br>今夜青稞只属于他自己<br>一切都在生长<br>今夜我只有美丽的戈壁空空<br>姐姐，今夜我不关心人类，我只想你</p>
-<p><img src="/pic/window.jpg" alt="Manchester"></p>
+      		<h4 id="隐藏的宝石：利用跨模态学习预测4D雷达场景流"><a href="#隐藏的宝石：利用跨模态学习预测4D雷达场景流" class="headerlink" title="隐藏的宝石：利用跨模态学习预测4D雷达场景流"></a>隐藏的宝石：利用跨模态学习预测4D雷达场景流</h4><p>原项目链接：<a target="_blank" rel="noopener" href="https://toytiny.github.io/publication/23-cmflow-cvpr/index.html">https://toytiny.github.io/publication/23-cmflow-cvpr/index.html</a></p>
+<h3 id="背景介绍："><a href="#背景介绍：" class="headerlink" title="背景介绍："></a>背景介绍：</h3><p>有一个事实就是现如今大多数具有“自动驾驶”能力的汽车，大都配备了多种不同类型的异构传感器，其中大都包含了以下几种传感器：4D雷达，LiDAR，相机和里程计。而近段时间人们对于点云高效处理的进步（如PointNet），使得4D雷达这种具有独特优势与潜力的传感器受到了越来越多的关注。</p>
+<h3 id="1-为什么是4D雷达？"><a href="#1-为什么是4D雷达？" class="headerlink" title="1. 为什么是4D雷达？"></a>1. 为什么是4D雷达？</h3><p>为什么我们会注重于4D雷达的开发呢？4D雷达相比其他类型的传感器具有什么优势？众所周知，人们常常使用多种不同类型传感器同时工作来构成汽车的感知层用于感知外部环境。而这其中的4D雷达相比相机来说具有更好的稳定性，可以在光照条件不佳的环境中保持工作。而相比于LiDAR来说4D雷达具有原理上天生的测速优势。并且最重要的一点是每个4D雷达的成本可能仅到LiDAR价格的百分之一。但4D雷达同时存在一些不容忽视的问题和劣势：1. 雷达的信号往往包含了大量噪音。2. 雷达生成的点云是远远稀疏于LiDAR所生成的点云的。如何规避这些劣势而发展其优势成为了我们所关注的重点。</p>
+<h3 id="2-什么是隐藏的宝石？"><a href="#2-什么是隐藏的宝石？" class="headerlink" title="2. 什么是隐藏的宝石？"></a>2. 什么是隐藏的宝石？</h3><p>由于我们使用深度学习来使用4D雷达数据去进行场景流的推理，因此训练成为了至关重要的一环。然而目前所存在的困境在于：1. 由于4D雷达中大量噪声的存在，使得自监督训练的效果不尽人意。2. 人工标注的数据训练下，性能表现好，但是大量训练数据的要求意味着难以承担的高额成本。</p>
+<pre><code>场景流(scene flow)，类似于2D平面中光流的概念。场景流可以识别3D空间内的运动物体和物体运动趋势，这对于自动驾驶而言是十分重要的领域。场景流下引出两个子领域：自我运动(ego-motion)和运动分割(motion segmentaion)。
+</code></pre>
+<p>有没有一种方法可以让我们突破自监督训练的低质量又可以不使用昂贵的人工标注训练呢？作者提出了一种基于跨模态学习的场景流预测方法。这样一种学习基于一个我们提到过的事实：如今的自动驾驶车辆大多配备了多种传感器。但任意一个传感器所提供的数据可信度是不够的，例如相机可能会收到反光或者灰尘的影响，LiDAR的误报等等。但值得注意的是，多种数据之间如果我们能够合理有效的组合，那么数据之间就会互相形成约束，这为我们不使用人工注释而有效进行有效训练提供了可能性。例如，基于视觉的自我运动估计常常出现误差，此时IMU就可以提供对于自身运动数据的约束。而这种曾被忽视可被运用的宝贵训练资源就是文章指出的隐藏宝石。</p>
+<h3 id="3-模型架构介绍"><a href="#3-模型架构介绍" class="headerlink" title="3. 模型架构介绍"></a>3. 模型架构介绍</h3><p>作者提出了模型的损失函数：L &#x3D; L<sub>ego</sub> + L<sub>seg</sub> + L<sub>flow</sub></p>
+<p>整体实验框架参考原文插图。模型为一个二阶段模型，第一阶段为：骨干网从雷达点云中提取特征并生成两个初始头；第二阶段为：根据初始头生成自我运动头，并根据自我运动头与初始头生成优化层（初始流场景减去自我运动得到预测的场景流）</p>
+<p>使用其他数据间的互相约束并对模型从ego seg 和 flow 三个角度计算损失。</p>
+<h3 id="4-实验目的"><a href="#4-实验目的" class="headerlink" title="4. 实验目的"></a>4. 实验目的</h3><p>实验目的在于证明作者所新提出的一种模型架构CMFlow在非人工标注的数据下训练是否可以超越其他模型非人工标注数据训练下的表现。其次，探究CMFlow在额外未标注数据的训练下是否性能可以比拟或超越少量人工数据训练下的结果。</p>
+<h3 id="5-模型性能表现"><a href="#5-模型性能表现" class="headerlink" title="5. 模型性能表现"></a>5. 模型性能表现</h3><p>实验表明作者提出的模型CMFlow在多项指标中均大幅优于其他对比基线方法。作者在此基础上进一步尝试使用额外的未标注数据量尝试改善模型性能，以达到较少人工标注数据下的训练结果。在当前模型训练基础上增加20%的额外为标注数据量（未标注数据量大约比标注数据量多140%），CMFlow性能与较少人工标注数据训练下的性能持平。实验结果进一步显示，在继续增大未标注训练数据后，模型的性能将进一步提升。同时场景流预测的解决，带来了两个子领域性能的改善。实验结果显示，在CMFlow下，自我运动检测与运动分割两个子任务的性能有明显提升。在消融实验的探究下，结果表明里程计对于模型性能具有最大的影响。</p>
+<h3 id="6-实验复现"><a href="#6-实验复现" class="headerlink" title="6. 实验复现"></a>6. 实验复现</h3><p>实验复现遵循原项目中指示，系统版本为Ubuntu22.04，运行在conda环境下：python3.7，cudatoolkit11.0，PyTorch1.7。实验中所使用的其他预训练模型和数据集根据实验指示下载和预处理。由于除了VoD数据集之外，额外的未标注数据集暂时无法访问，故只复现原实验的性能比较部分。在同一测试集下发现在本机上训练的CMFlow模型相较于项目所提供的预训练模型性能有所差距，在某些指标上的差距落后于项目给出预训练模型15%-20%，但性能仍然高于文章所提供的其他几种对比方法。然而，相同训练设置之下，CMFlow(T)与RaFlow的性能差距相较于项目提供的预训练模型差距均在10%以内，基本可以认为复现了实验。对于为何在相同训练设置和数据集下CMFlow相较于其他模型产生较大差异，暂时还未探明原因。随后尝试减低训练batch size由16降为8。再次测试CMFlow性能，发现性能有明显提升。初步推测可能的原因有两点：1. 更小的batch size更容易落入局部最优解；2. 更小的batch size可能会引入噪声避免了模型的过拟合。</p>
+<p>（持续更新中……）</p>
 
             <div class="clearfix"></div>
             <hr class="nogutter">
         </div>
         <nav class="m-pagination col-md-8 col-md-offset-2 col-sm-24" role="pagination">
     
-    <a class="pull-left" href="/2023/08/01/hiddenGems/" style="float: left;">
-        ← 文章阅读：《Hidden Gems: 4D Radar Scene Flow Learning Using Cross-Modal Supervision》(CVPR2023 highlight)
+    <a class="pull-left" href="/2023/08/01/cr1read/" style="float: left;">
+        ← 阅读笔记：认知机器人 第一章
     </a>
     
     
-    <a class="pull-right" href="/2023/03/13/graphColoringProblem/">
-        使用Python简单求解图着色问题 →
+    <a class="pull-right" href="/2023/03/15/HaiZi'spoetry/">
+        海子 《日记》 →
     </a>
     
 </nav>
